@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Taraki Coffee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --br:#3b1f0e;--ma:#5c2d14;--ca:#a0522d;--la:#c9956a;--pe:#e8b896;
+  --cr:#f5ebe0;--mi:#fdf8f3;--wh:#fff;--in:#1a0e07;--mu:#8a7060;
+  --bd:#f0e6dc;--sh:rgba(28,15,7,.08);
+  --grn:#1a7a3a;--grn-l:#e8f5ed;
+  --nav:68px;--hdr:70px;
+  --fs:'Playfair Display',serif;--fn:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;
+  --ease:.2s cubic-bezier(.4,0,.2,1);
+}
+html,body{height:100%;font-family:var(--fn);background:#c8b5a5;overflow:hidden;
+  -webkit-font-smoothing:antialiased;color:var(--in)}
+
+/* ── SHELL ── */
+#app{display:flex;flex-direction:column;height:100dvh;max-width:430px;
+  margin:0 auto;background:var(--wh);position:relative;
+  box-shadow:0 0 60px rgba(0,0,0,.3);overflow:hidden}
+
+/* ── HEADER ── */
+header{background:var(--br);padding:0 16px;height:var(--hdr);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;
+  background:linear-gradient(90deg,var(--ma),var(--la),var(--ma))}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:42px;height:42px;background:var(--ma);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  border:1.5px solid rgba(201,149,106,.3)}
+.logo-text{display:flex;flex-direction:column;line-height:1}
+.logo-name{font-family:var(--fs);font-size:20px;font-weight:700;color:var(--cr);letter-spacing:-.2px}
+.logo-name span{color:var(--la);font-style:italic}
+.logo-sub{font-size:9px;color:var(--pe);opacity:.8;font-style:italic;
+  font-family:var(--fs);margin-top:2px}
+.logo-loc{font-size:8.5px;color:var(--la);opacity:.7;letter-spacing:.5px;margin-top:1px}
+/* hidden POS trigger */
+#pos-trigger{position:absolute;top:0;right:0;width:60px;height:100%;
+  z-index:20;cursor:default;-webkit-tap-highlight-color:transparent}
+
+/* ── SCROLL AREA ── */
+#scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:var(--wh)}
+#scroll-area::-webkit-scrollbar{display:none}
+
+/* ── VIEWS ── */
+.view{display:none;min-height:100%;animation:fIn .2s ease}
+.view.active{display:block}
+@keyframes fIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── MENU STICKY HEADER ── */
+.menu-sticky{position:sticky;top:0;z-index:30;background:var(--wh);
+  border-bottom:1px solid var(--bd)}
+.search-wrap{padding:10px 14px 8px;background:var(--wh)}
+.search-box{display:flex;align-items:center;gap:8px;background:#f4efe9;
+  border-radius:10px;padding:9px 12px;border:1px solid var(--bd)}
+.search-box input{flex:1;border:none;background:transparent;font-family:var(--fn);
+  font-size:13px;color:var(--in);outline:none}
+.search-box input::placeholder{color:var(--mu);font-weight:400}
+.search-icon{font-size:14px;opacity:.5;flex-shrink:0}
+.cat-scroll{display:flex;gap:6px;padding:0 14px 10px;overflow-x:auto}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  cursor:pointer;border:1.5px solid var(--bd);color:var(--mu);background:var(--wh);
+  transition:var(--ease);white-space:nowrap}
+.cat-pill.active{background:var(--br);border-color:var(--br);color:var(--wh)}
+.cat-pill:not(.active):hover{border-color:var(--la);color:var(--ca)}
+
+/* ── SECTION LABEL ── */
+.section-label{padding:14px 16px 6px;display:flex;align-items:center;gap:10px}
+.section-label-text{font-size:11px;font-weight:700;letter-spacing:1.8px;
+  text-transform:uppercase;color:var(--ca);white-space:nowrap}
+.section-label-line{flex:1;height:1px;background:var(--bd)}
+.subsection-label{padding:10px 16px 4px;font-size:10px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
+
+/* ── MENU ITEM ROW ── */
+.menu-list{padding-bottom:24px}
+.menu-item{display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:var(--wh);border-bottom:1px solid var(--bd);
+  transition:background var(--ease);cursor:pointer;position:relative}
+.menu-item:active{background:#faf5f0}
+.menu-item:last-child{border-bottom:none}
+
+.item-info{flex:1;min-width:0;padding-right:4px}
+.item-name{font-size:14.5px;font-weight:600;color:var(--in);
+  display:flex;align-items:center;gap:6px;line-height:1.3}
+.item-best{background:var(--br);color:var(--la);font-size:8px;font-weight:700;
+  padding:2px 5px;border-radius:4px;letter-spacing:.5px;flex-shrink:0}
+.item-desc{font-size:11.5px;color:var(--mu);margin-top:3px;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item-price{font-size:14px;font-weight:700;color:var(--ma);margin-top:6px;
+  font-family:var(--fs)}
+
+.item-img-wrap{flex-shrink:0;width:82px;height:82px;border-radius:12px;
+  overflow:hidden;position:relative}
+.item-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:36px;border-radius:12px}
+.item-add{position:absolute;bottom:4px;right:4px;width:28px;height:28px;
+  background:var(--br);border-radius:50%;border:none;color:var(--wh);
+  font-size:18px;font-weight:300;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 2px 8px rgba(28,15,7,.35);
+  transition:background var(--ease),transform var(--ease);line-height:1}
+.item-add:hover{background:var(--ma)}
+.item-add:active{transform:scale(.9)}
+.item-add.in-cart{background:var(--ca)}
+
+/* ── BOTTOM SHEET (size/qty picker) ── */
+#sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;
+  opacity:0;pointer-events:none;transition:opacity .25s ease}
+#sheet-overlay.open{opacity:1;pointer-events:all}
+#sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+  width:100%;max-width:430px;background:var(--wh);border-radius:20px 20px 0 0;
+  z-index:510;padding:0 0 32px;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+#sheet.open{transform:translateX(-50%) translateY(0)}
+.sheet-handle{width:40px;height:4px;background:var(--bd);border-radius:2px;
+  margin:10px auto 14px}
+.sheet-item{display:flex;align-items:center;gap:14px;padding:0 18px 16px;
+  border-bottom:1px solid var(--bd);margin-bottom:16px}
+.sheet-img{width:64px;height:64px;border-radius:10px;display:flex;
+  align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.sheet-item-info{}
+.sheet-name{font-size:16px;font-weight:600;color:var(--in);font-family:var(--fs)}
+.sheet-desc{font-size:11.5px;color:var(--mu);margin-top:2px}
+.sheet-section{padding:0 18px 12px}
+.sheet-section-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--mu);margin-bottom:10px}
+.sheet-sizes{display:flex;gap:8px}
+.sheet-size{flex:1;padding:10px 0;border-radius:10px;border:1.5px solid var(--bd);
+  text-align:center;cursor:pointer;background:var(--wh);transition:var(--ease)}
+.sheet-size.active{background:var(--br);border-color:var(--br);color:var(--wh)}
+.sheet-size-lbl{font-size:12px;font-weight:600;color:inherit}
+.sheet-size-price{font-size:13px;font-weight:700;color:inherit;margin-top:2px;font-family:var(--fs)}
+.sheet-size:not(.active) .sheet-size-lbl{color:var(--mu)}
+.sheet-size:not(.active) .sheet-size-price{color:var(--ma)}
+.sheet-qty-row{display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px 16px}
+.sheet-qty-lbl{font-size:13px;font-weight:600;color:var(--in)}
+.sheet-qty-ctrl{display:flex;align-items:center;gap:0;background:#f4efe9;
+  border-radius:10px;overflow:hidden;border:1px solid var(--bd)}
+.sqb{width:36px;height:36px;border:none;background:transparent;font-size:18px;
+  font-weight:600;color:var(--ma);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:background var(--ease)}
+.sqb:active{background:var(--bd)}
+.sqn{width:36px;text-align:center;font-size:14px;font-weight:700;color:var(--in)}
+.sheet-add-btn{margin:4px 18px 0;width:calc(100% - 36px);padding:14px;
+  background:var(--br);color:var(--wh);border:none;border-radius:14px;
+  font-family:var(--fs);font-size:16px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(28,15,7,.25);transition:background var(--ease)}
+.sheet-add-btn:hover{background:var(--ma)}
+
+/* ── VIEW HEADER ── */
+.view-top{padding:18px 16px 0}
+.view-title{font-family:var(--fs);font-size:24px;font-weight:700}
+.view-title em{color:var(--ca);font-style:italic}
+.view-sub{font-size:12px;color:var(--mu);margin-top:3px}
+
+/* ── CART VIEW ── */
+.center-empty{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 24px;gap:12px;text-align:center}
+.empty-icon{font-size:52px;opacity:.35}
+.empty-title{font-family:var(--fs);font-size:18px;color:var(--mu);font-style:italic}
+.empty-sub{font-size:12px;color:var(--mu);opacity:.7}
+.cart-list{padding:14px 14px 8px;display:flex;flex-direction:column;gap:8px}
+.cart-item{background:var(--wh);border-radius:12px;padding:11px 13px;
+  display:flex;align-items:center;gap:12px;border:1px solid var(--bd);
+  animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.ci-thumb{width:46px;height:46px;border-radius:10px;display:flex;
+  align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:13px;font-weight:600;color:var(--in);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-sub{font-size:11px;color:var(--mu);margin-top:2px}
+.ci-price{font-size:14px;font-weight:700;color:var(--ma);font-family:var(--fs);flex-shrink:0}
+.ci-remove{background:none;border:none;color:#ccc;font-size:16px;
+  cursor:pointer;padding:4px;transition:color var(--ease)}
+.ci-remove:hover{color:#c0392b}
+.cart-footer{margin:0 14px}
+.cart-total-card{background:var(--wh);border-radius:12px;padding:14px;border:1px solid var(--bd)}
+.total-row{display:flex;justify-content:space-between;align-items:center}
+.total-lbl{font-family:var(--fs);font-size:15px;font-weight:600;color:var(--in)}
+.total-val{font-family:var(--fs);font-size:20px;font-weight:700;color:var(--ma)}
+.order-wrap{padding:14px 14px 24px}
+.place-btn{width:100%;padding:15px;background:var(--br);color:var(--wh);
+  border:none;border-radius:14px;font-family:var(--fs);font-size:17px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 18px rgba(28,15,7,.28);transition:background var(--ease),transform var(--ease)}
+.place-btn:hover:not(:disabled){background:var(--ma)}
+.place-btn:active:not(:disabled){transform:scale(.98)}
+.place-btn:disabled{opacity:.65;cursor:not-allowed}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);
+  border-top-color:var(--wh);border-radius:50%;animation:spin .7s linear infinite;display:none}
+.place-btn.loading .spin{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ORDERS VIEW ── */
+.order-card{margin:0 14px 14px;background:var(--wh);border-radius:16px;
+  overflow:hidden;border:1px solid var(--bd);box-shadow:0 2px 14px var(--sh);
+  animation:fIn .3s ease}
+.oc-top{background:var(--br);padding:13px 15px;display:flex;justify-content:space-between;align-items:center}
+.oc-id{font-family:var(--fs);font-size:18px;font-weight:700;color:var(--cr)}
+.oc-badge{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:var(--la);color:var(--br);padding:3px 10px;border-radius:20px}
+.pay-banner{display:flex;align-items:center;gap:8px;padding:10px 15px;
+  font-size:12px;font-weight:600}
+.pay-banner.pending{background:#fff8e8;color:#7a5c00}
+.pay-banner.paid{background:var(--grn-l);color:var(--grn)}
+.pay-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pay-banner.pending .pay-dot{background:#f0b429;animation:blink 1.2s ease infinite}
+.pay-banner.paid .pay-dot{background:var(--grn)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.oc-receipt{padding:12px 15px;border-bottom:1px dashed var(--bd)}
+.rcpt-lbl{font-size:9.5px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--mu);margin-bottom:8px}
+.r-row{display:flex;justify-content:space-between;padding:3.5px 0;align-items:center}
+.r-left{display:flex;align-items:center;gap:7px}
+.r-emoji{font-size:14px}
+.r-name{font-size:12.5px;color:var(--in)}
+.r-sz{font-size:10px;color:var(--mu)}
+.r-qty{font-size:10.5px;color:var(--mu)}
+.r-price{font-size:12.5px;font-weight:600;color:var(--in)}
+.r-total{display:flex;justify-content:space-between;
+  margin-top:9px;padding-top:8px;border-top:1px solid var(--bd);align-items:center}
+.r-total-lbl{font-family:var(--fs);font-size:13px;font-weight:600}
+.r-total-val{font-family:var(--fs);font-size:16px;font-weight:700;color:var(--ma)}
+.prog-section{padding:14px 15px}
+.prog-lbl{font-size:9.5px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--mu);margin-bottom:12px}
+.prog-steps{display:flex;align-items:flex-start;position:relative}
+.prog-line{position:absolute;top:13px;left:13px;right:13px;height:2px;background:var(--bd);z-index:0}
+.prog-fill{height:100%;background:var(--la);transition:width 1s ease}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1}
+.step-dot{width:26px;height:26px;border-radius:50%;background:var(--bd);
+  border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;
+  font-size:11px;transition:all .5s ease;color:var(--mu)}
+.step.done .step-dot{background:var(--la);border-color:var(--la);color:var(--wh)}
+.step.active .step-dot{background:var(--wh);border-color:var(--ma);color:var(--ma);
+  box-shadow:0 0 0 4px rgba(92,45,20,.12);animation:sPulse 1.6s ease infinite}
+@keyframes sPulse{0%,100%{box-shadow:0 0 0 4px rgba(92,45,20,.12)}50%{box-shadow:0 0 0 7px rgba(92,45,20,.05)}}
+.step-lbl{font-size:9px;font-weight:600;color:var(--mu);text-align:center;line-height:1.3}
+.step.active .step-lbl,.step.done .step-lbl{color:var(--ma)}
+.step-eta{font-size:8px;color:var(--la);text-align:center}
+.oc-footer{padding:10px 15px 13px;border-top:1px solid var(--bd);
+  display:flex;justify-content:space-between;align-items:center}
+.oc-time-lbl{font-size:10px;color:var(--mu)}
+.oc-time-val{font-size:12.5px;font-weight:600;margin-top:1px}
+.new-order-btn{padding:7px 14px;background:transparent;border:1.5px solid var(--ma);
+  color:var(--ma);border-radius:8px;font-family:var(--fn);font-size:12px;font-weight:600;
+  cursor:pointer;transition:background var(--ease),color var(--ease)}
+.new-order-btn:hover{background:var(--ma);color:var(--wh)}
+
+/* ── BOTTOM NAV ── */
+nav{height:var(--nav);background:var(--wh);border-top:1px solid var(--bd);
+  display:flex;align-items:stretch;flex-shrink:0;position:relative;z-index:20}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;background:none;border:none;cursor:pointer;
+  color:var(--mu);transition:color var(--ease);padding-bottom:4px;position:relative}
+.nav-tab::before{content:'';position:absolute;top:0;left:20%;right:20%;
+  height:2.5px;background:var(--br);border-radius:0 0 3px 3px;
+  transform:scaleX(0);transition:transform var(--ease);transform-origin:center}
+.nav-tab.active{color:var(--br)}
+.nav-tab.active::before{transform:scaleX(1)}
+.nav-icon{font-size:20px;line-height:1;position:relative}
+.nav-badge{position:absolute;top:-5px;right:-8px;min-width:16px;height:16px;
+  background:var(--ma);color:#fff;border-radius:10px;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+  transform:scale(0);transition:transform .28s cubic-bezier(.34,1.56,.64,1)}
+.nav-badge.show{transform:scale(1)}
+.nav-lbl{font-size:10px;font-weight:500}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:calc(var(--nav) + 12px);left:50%;
+  transform:translateX(-50%) translateY(14px);background:var(--br);color:var(--cr);
+  font-size:12px;font-weight:500;padding:9px 18px;border-radius:22px;opacity:0;
+  pointer-events:none;transition:opacity .22s,transform .22s;z-index:600;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);max-width:300px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── POS HINT ── */
+.pos-hint{position:absolute;bottom:calc(var(--nav) + 12px);right:14px;
+  background:var(--br);color:var(--la);font-size:10px;font-weight:500;
+  padding:6px 12px;border-radius:20px;opacity:0;transition:opacity .3s,transform .3s;
+  pointer-events:none;white-space:nowrap;z-index:50;transform:translateY(8px)}
+.pos-hint.show{opacity:1;transform:translateY(0)}
+
+/* ── POS NOTIFY ── */
+.pos-notify{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:var(--grn);color:#fff;border-radius:14px;padding:10px 16px;
+  font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px;z-index:700;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;max-width:330px;white-space:nowrap}
+.pos-notify.show{transform:translateX(-50%) translateY(0)}
+
+/*══════════════════════════════════
+  POS TERMINAL
+══════════════════════════════════*/
+#pos-overlay{position:fixed;inset:0;z-index:1000;background:#0d1821;
+  display:none;flex-direction:column;font-family:var(--fn);overflow:hidden}
+#pos-overlay.open{display:flex}
+.pos-hdr{background:#131f2c;padding:0 18px;height:56px;display:flex;
+  align-items:center;justify-content:space-between;border-bottom:1px solid #1a2b3a;flex-shrink:0}
+.pos-logo-wrap{display:flex;align-items:center;gap:10px}
+.pos-logo-ico{width:34px;height:34px;background:var(--grn);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:16px}
+.pos-logo-name{font-family:var(--fs);font-size:17px;font-weight:700;color:#fff}
+.pos-logo-name em{color:#4db87a;font-style:italic}
+.pos-logo-sub{font-size:9.5px;color:#3a5a6a;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.pos-hdr-r{display:flex;align-items:center;gap:10px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--grn);animation:blink 1.2s ease infinite}
+.live-txt{font-size:11px;color:#3a5a6a;font-weight:500;letter-spacing:.5px}
+.pos-close{background:rgba(255,255,255,.06);border:none;color:#6a8a9a;
+  width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;transition:background .2s}
+.pos-close:hover{background:rgba(255,255,255,.12);color:#fff}
+.pos-stats{background:#0f1c28;padding:10px 0;display:flex;
+  border-bottom:1px solid #1a2b3a;flex-shrink:0}
+.pos-stat{flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:2px;border-right:1px solid #1a2b3a}
+.pos-stat:last-child{border-right:none}
+.ps-val{font-family:var(--fm);font-size:20px;font-weight:600;color:#fff}
+.ps-val.y{color:#f0b429}
+.ps-val.g{color:#4db87a}
+.ps-lbl{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#2a4a5a}
+.pos-q-lbl{padding:12px 18px 6px;font-size:9.5px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;color:#2a4a5a;flex-shrink:0}
+.pos-queue{flex:1;overflow-y:auto;padding:0 12px 20px;display:flex;flex-direction:column;gap:10px}
+.pos-queue::-webkit-scrollbar{width:4px}
+.pos-queue::-webkit-scrollbar-thumb{background:#1a2b3a;border-radius:2px}
+.pos-empty-wrap{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;flex:1;gap:12px;color:#2a4a5a;text-align:center;padding:40px}
+.pos-empty-ico{font-size:48px;opacity:.25}
+.pos-empty-txt{font-size:15px;font-weight:500;font-family:var(--fs);font-style:italic;color:#3a5a6a}
+.pos-empty-sub{font-size:11px;color:#2a4a5a}
+.pos-ticket{background:#131f2c;border-radius:12px;border:1px solid #1a2b3a;
+  overflow:hidden;animation:tickIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes tickIn{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:none}}
+.pos-ticket.charged{border-color:rgba(26,122,58,.4);opacity:.65}
+.pt-top{padding:11px 13px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid #1a2b3a}
+.pt-id{font-family:var(--fm);font-size:16px;font-weight:600;color:#fff;letter-spacing:.5px}
+.pt-time{font-size:10px;color:#3a5a6a;font-family:var(--fm);margin-top:1px}
+.pt-badge{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px}
+.pt-badge.pending{background:rgba(240,180,41,.12);color:#f0b429}
+.pt-badge.charged{background:rgba(26,122,58,.18);color:#4db87a}
+.pt-items{padding:10px 13px;border-bottom:1px dashed #1a2b3a}
+.pt-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
+.pt-item-l{display:flex;align-items:center;gap:7px}
+.pt-em{font-size:15px}
+.pt-nm{font-size:12.5px;color:#c8d8e8}
+.pt-sz{font-size:10px;color:#3a5a6a}
+.pt-iq{font-size:10px;color:#3a5a6a}
+.pt-ip{font-size:13px;font-weight:600;color:#fff;font-family:var(--fm)}
+.pt-total{padding:10px 13px;display:flex;justify-content:space-between;
+  align-items:center;border-bottom:1px solid #1a2b3a}
+.pt-total-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#3a5a6a}
+.pt-total-val{font-family:var(--fm);font-size:20px;font-weight:600;color:#fff}
+.pt-actions{padding:10px 13px;display:flex;gap:8px;align-items:center}
+.charge-btn{flex:1;padding:11px;background:var(--grn);color:#fff;border:none;
+  border-radius:8px;font-family:var(--fn);font-size:13px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:background .2s,transform .15s;box-shadow:0 2px 12px rgba(26,122,58,.35)}
+.charge-btn:hover{background:#22944a}
+.charge-btn:active{transform:scale(.97)}
+.charge-btn:disabled{background:#1a2b3a;color:#2a4a5a;box-shadow:none;cursor:not-allowed}
+.done-lbl{flex:1;font-size:13px;color:#4db87a;font-weight:600;
+  display:flex;align-items:center;gap:6px}
+.print-btn{width:38px;height:38px;background:#1a2b3a;border:none;border-radius:8px;
+  color:#3a6a7a;font-size:16px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;transition:background .2s,color .2s}
+.print-btn:hover{background:#1e3040;color:#8ab}
+</style>
+</head>
+<body>
+
+<!-- ══ CUSTOMER APP ══ -->
+<div id="app">
+  <header>
+    <div id="pos-trigger"></div>
+    <div class="logo">
+      <div class="logo-icon">☕</div>
+      <div class="logo-text">
+        <span class="logo-name">Taraki <span>Coffee</span></span>
+        <span class="logo-sub">Coffee makes life better</span>
+        <span class="logo-loc">📍 Mangatarem, Pangasinan · Est. 2022</span>
+      </div>
+    </div>
+  </header>
+
+  <div id="scroll-area">
+    <!-- MENU -->
+    <div id="view-menu" class="view active">
+      <div class="menu-sticky">
+        <div class="search-wrap">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search menu…" oninput="doSearch()"/>
+          </div>
+        </div>
+        <div class="cat-scroll" id="cat-row"></div>
+      </div>
+      <div class="menu-list" id="menu-list"></div>
+    </div>
+
+    <!-- CART -->
+    <div id="view-cart" class="view">
+      <div class="view-top">
+        <div class="view-title">Your <em>Cart</em></div>
+        <div class="view-sub" id="cart-sub">0 items</div>
+      </div>
+      <div id="cart-content"></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div id="view-orders" class="view">
+      <div class="view-top">
+        <div class="view-title">Active <em>Orders</em></div>
+        <div class="view-sub">Orders sent live to the cashier</div>
+      </div>
+      <div id="orders-content" style="padding-top:12px"></div>
+    </div>
+  </div>
+
+  <nav>
+    <button class="nav-tab active" data-view="menu">
+      <span class="nav-icon">🍽️</span>
+      <span class="nav-lbl">Menu</span>
+    </button>
+    <button class="nav-tab" data-view="cart">
+      <span class="nav-icon" style="position:relative">
+        🛒<span class="nav-badge" id="cart-badge"></span>
+      </span>
+      <span class="nav-lbl">Cart (<span id="cart-count">0</span>)</span>
+    </button>
+    <button class="nav-tab" data-view="orders">
+      <span class="nav-icon">📋</span>
+      <span class="nav-lbl">Orders</span>
+    </button>
+  </nav>
+</div>
+
+<!-- BOTTOM SHEET -->
+<div id="sheet-overlay" onclick="closeSheet()"></div>
+<div id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-item">
+    <div class="sheet-img" id="sh-img"></div>
+    <div class="sheet-item-info">
+      <div class="sheet-name" id="sh-name"></div>
+      <div class="sheet-desc" id="sh-desc"></div>
+    </div>
+  </div>
+  <div id="sh-sizes-wrap" class="sheet-section">
+    <div class="sheet-section-lbl">Choose Size</div>
+    <div class="sheet-sizes" id="sh-sizes"></div>
+  </div>
+  <div class="sheet-qty-row">
+    <span class="sheet-qty-lbl">Quantity</span>
+    <div class="sheet-qty-ctrl">
+      <button class="sqb" onclick="sheetQty(-1)">−</button>
+      <span class="sqn" id="sh-qty">1</span>
+      <button class="sqb" onclick="sheetQty(+1)">+</button>
+    </div>
+  </div>
+  <button class="sheet-add-btn" id="sh-add-btn" onclick="sheetAddToCart()">
+    <span id="sh-add-txt">Add to Cart · ₱0</span>
+  </button>
+</div>
+
+<div id="toast"></div>
+<div class="pos-hint" id="pos-hint">🖥️ Hold to open POS Terminal</div>
+<div class="pos-notify" id="pos-notify">
+  <span>🔔</span><span id="pos-notify-txt">Order sent to cashier!</span>
+</div>
+
+<!-- POS TERMINAL -->
+<div id="pos-overlay">
+  <div class="pos-hdr">
+    <div class="pos-logo-wrap">
+      <div class="pos-logo-ico">☕</div>
+      <div>
+        <div class="pos-logo-name">Taraki <em>POS</em></div>
+        <div class="pos-logo-sub">Cashier Terminal</div>
+      </div>
+    </div>
+    <div class="pos-hdr-r">
+      <div class="live-dot"></div>
+      <span class="live-txt">LIVE</span>
+      <button class="pos-close" onclick="closePOS()">✕</button>
+    </div>
+  </div>
+  <div class="pos-stats">
+    <div class="pos-stat"><div class="ps-val y" id="pos-pending">0</div><div class="ps-lbl">Pending</div></div>
+    <div class="pos-stat"><div class="ps-val g" id="pos-charged">0</div><div class="ps-lbl">Charged</div></div>
+    <div class="pos-stat"><div class="ps-val g" id="pos-revenue">₱0</div><div class="ps-lbl">Revenue</div></div>
+  </div>
+  <div class="pos-q-lbl">Order Queue</div>
+  <div class="pos-queue" id="pos-queue"></div>
+</div>
+
+<script>
+'use strict';
+/*════════════════════════════════
+  MENU DATA
+════════════════════════════════*/
+const S=(id,n,cat,sub,em,bg,M,L,star=false,desc='')=>({id,name:n,cat,sub,em,bg,type:'sized',M,L,star,desc});
+const F=(id,n,cat,sub,em,bg,price,star=false,desc='')=>({id,name:n,cat,sub,em,bg,type:'fixed',price,star,desc});
+
+const MENU=[
+  S(1,'Java Chips','frappe','Coffee Based','☕','#f3e4d4',120,130,true,'Bold espresso blended with chocolate chips and cream'),
+  S(2,'Mocha','frappe','Coffee Based','🍫','#f0ddd0',120,130,false,'Rich espresso and premium chocolate blend'),
+  S(3,'Caramel','frappe','Coffee Based','🍮','#fde9d3',120,130,false,'Sweet caramel drizzled over a creamy espresso base'),
+  S(4,'Matcha','frappe','Coffee Based','🍵','#e8f3e8',130,140,true,'Premium matcha paired with espresso'),
+  S(5,'Salted Caramel','frappe','Coffee Based','🧂','#fde9d3',120,130,true,'Sea salt and sweet caramel over espresso'),
+  S(6,'Cookies & Cream','frappe','Coffee Based','🍪','#f5f0e8',120,130,false,'Oreo cookie blended espresso frappe'),
+  S(7,'Double Choco','frappe','Non Coffee Based','🍫','#f0ddd0',120,130,true,'Double layer of premium chocolate bliss'),
+  S(8,'Cookies & Cream','frappe','Non Coffee Based','🍪','#f5f0e8',120,130,false,'Classic Oreo cookies and cream frappe'),
+  S(9,'Caramel','frappe','Non Coffee Based','🍮','#fde9d3',120,130,true,'Rich caramel non-coffee frappe'),
+  S(10,'Matcha','frappe','Non Coffee Based','🍵','#e8f3e8',130,140,true,'Pure matcha frappe, coffee-free'),
+  S(11,'Salted Caramel','frappe','Non Coffee Based','🧂','#fde9d3',120,130,false,'Sweet and salty caramel without coffee'),
+  S(12,'Matcha Latte','noncoffee','Special Non Coffee','🍵','#dff0df',110,120,true,'Ceremonial grade matcha · Also available Hot ₱110'),
+  S(13,'Chocolate','noncoffee','Special Non Coffee','🍫','#f0ddd0',100,110,false,'Premium chocolate drink · Also available Hot ₱100'),
+  S(14,'Ube Latte','noncoffee','Special Non Coffee','🥛','#f0e8f5',110,120,false,'Creamy purple yam milk latte'),
+  S(15,'Ceremonial Matcha','noncoffee','Special Non Coffee','🌿','#dff0df',120,130,false,'Premium ceremonial grade matcha'),
+  S(16,'Salty Cream Matcha','noncoffee','Special Non Coffee','🍵','#e2f0e2',120,130,false,'Matcha topped with a luscious salty cream'),
+  S(17,'Okinawa','milktea','Milk Tea','🧋','#f0e8d8',85,95,true,'Classic brown sugar milk tea'),
+  S(18,'Dark Chocolate','milktea','Milk Tea','🍫','#f0ddd0',85,95,false,'Rich dark chocolate milk tea'),
+  S(19,'Belgian Chocolate','milktea','Milk Tea','🍫','#edddd8',85,95,false,'Smooth Belgian chocolate blend'),
+  S(20,'Matcha','milktea','Milk Tea','🍵','#e8f3e8',85,95,false,'Japanese matcha milk tea'),
+  S(21,'Wintermelon','milktea','Milk Tea','🍈','#e8f0e0',85,95,true,'Classic wintermelon milk tea'),
+  S(22,'Lemon','fruittea','Fruit Tea','🍋','#fefce0',75,85,false,'Refreshing citrus fruit tea'),
+  S(23,'Blueberry','fruittea','Fruit Tea','🫐','#ede8f5',75,85,false,'Sweet and tangy blueberry fruit tea'),
+  S(24,'Honey Peach','fruittea','Fruit Tea','🍑','#fde8e0',75,85,false,'Delicate honey and peach blend'),
+  S(25,'Lychee','fruittea','Fruit Tea','🍈','#fef0f0',75,85,true,'Floral and sweet lychee fruit tea'),
+  S(26,'Mango','fruittea','Fruit Tea','🥭','#fef3e0',75,85,false,'Tropical mango fruit tea'),
+  S(27,'Strawberry','fruittea','Fruit Tea','🍓','#fde8e8',75,85,true,'Sweet fresh strawberry tea'),
+  S(28,'Passion Fruit','fruittea','Fruit Tea','💛','#fefce0',75,85,false,'Tangy tropical passion fruit tea'),
+  S(29,'Green Apple','fruittea','Fruit Tea','🍏','#e8f5e8',75,85,true,'Crisp and refreshing green apple tea'),
+  S(30,'Lemon','yakult','Yakult Series','🍋','#fefce0',85,95,false,'Lemon with probiotic Yakult'),
+  S(31,'Blueberry','yakult','Yakult Series','🫐','#ede8f5',85,95,false,'Blueberry probiotic Yakult blend'),
+  S(32,'Honey Peach','yakult','Yakult Series','🍑','#fde8e0',85,95,false,'Honey peach with Yakult'),
+  S(33,'Lychee','yakult','Yakult Series','🍈','#fef0f0',85,95,true,'Floral lychee Yakult drink'),
+  S(34,'Mango','yakult','Yakult Series','🥭','#fef3e0',85,95,false,'Tropical mango Yakult blend'),
+  S(35,'Strawberry','yakult','Yakult Series','🍓','#fde8e8',85,95,true,'Sweet strawberry Yakult refresher'),
+  S(36,'Passion Fruit','yakult','Yakult Series','💛','#fefce0',85,95,false,'Passion fruit Yakult blend'),
+  S(37,'Green Apple','yakult','Yakult Series','🍏','#e8f5e8',85,95,true,'Green apple Yakult refresher'),
+  S(38,'Lemon','slushy','Slushy','🍋','#fefce0',65,75,false,'Icy blended lemon slushy'),
+  S(39,'Blueberry','slushy','Slushy','🫐','#ede8f5',65,75,false,'Frozen blueberry slushy'),
+  S(40,'Honey Peach','slushy','Slushy','🍑','#fde8e0',65,75,false,'Sweet honey peach slushy'),
+  S(41,'Lychee','slushy','Slushy','🍈','#fef0f0',65,75,false,'Cool lychee slushy'),
+  S(42,'Mango','slushy','Slushy','🥭','#fef3e0',65,75,true,'Tropical mango frozen slushy'),
+  S(43,'Strawberry','slushy','Slushy','🍓','#fde8e8',65,75,false,'Fresh strawberry slushy'),
+  S(44,'Passion Fruit','slushy','Slushy','💛','#fefce0',65,75,false,'Tangy passion fruit slushy'),
+  S(45,'Green Apple','slushy','Slushy','🍏','#e8f5e8',65,75,true,'Crisp green apple frozen slushy'),
+  F(46,'Biscoff Tiramisu','food','Tiramisu','🍰','#f5ece0',180,false,'Layers of Biscoff cookies and mascarpone cream'),
+  F(47,'Matcha Tiramisu','food','Tiramisu','🍵','#e8f3e8',170,false,'Matcha-infused Italian tiramisu'),
+  F(48,'Classic Tiramisu','food','Tiramisu','🍰','#f5ece0',150,false,'Traditional Italian espresso tiramisu'),
+  F(49,'Choco Tiramisu','food','Tiramisu','🍫','#f0ddd0',160,false,'Rich dark chocolate tiramisu'),
+  F(50,'All Cheese Pizza','food','Pizza','🍕','#fef3e0',185,false,'Loaded with four premium cheeses'),
+  F(51,'Pepperoni Pizza','food','Pizza','🍕','#fde8e0',195,false,'Classic pepperoni with mozzarella'),
+  F(52,'Hawaiian Pizza','food','Pizza','🍕','#fef3e0',200,false,'Ham and pineapple combination'),
+  F(53,'Spinach Pizza','food','Pizza','🍕','#e8f3e8',230,false,'Fresh spinach with premium toppings'),
+  F(54,'Ham & Cheese Pizza','food','Pizza','🍕','#fde8e0',190,false,'Savory ham and cheese pizza'),
+  F(55,'Truffle Pasta','food','Pasta','🍝','#f5ece0',170,false,'Black truffle cream pasta'),
+  F(56,'Aglio Olio','food','Pasta','🍝','#f5ece0',160,false,'Garlic and olive oil spaghetti'),
+  F(57,'Ham & Cheese Sandwich','food','Clubhouse Sandwich','🥪','#fef3e0',140,false,'Classic ham and cheese clubhouse'),
+  F(58,'Ham & Egg Sandwich','food','Clubhouse Sandwich','🥪','#fef3e0',140,false,'Hearty ham and egg clubhouse'),
+  F(59,'Tuna Egg Sandwich','food','Clubhouse Sandwich','🥪','#fef3e0',140,false,'Tuna and egg clubhouse sandwich'),
+  F(60,'Spam & Cheese Sandwich','food','Clubhouse Sandwich','🥪','#fef3e0',140,false,'Spam and cheese clubhouse'),
+  F(61,'Cheese Fries','food','French Fries','🍟','#fef3e0',60,false,'Crispy fries with cheese sauce'),
+  F(62,'Barbecue Fries','food','French Fries','🍟','#fde8e0',60,false,'Smoky BBQ seasoned fries'),
+  F(63,'Sour Cream Fries','food','French Fries','🍟','#f5f0e8',60,false,'Fries with creamy sour cream dip'),
+  F(64,'Matcha Croffle','food','Croffle','🧇','#e8f3e8',120,false,'Croissant-waffle with matcha'),
+  F(65,'Biscoff Croffle','food','Croffle','🧇','#f5ece0',120,false,'Croissant-waffle with Biscoff spread'),
+  F(66,'Caramel Croffle','food','Croffle','🧇','#fde9d3',120,false,'Sweet caramel croissant-waffle'),
+  F(67,'Chocolate Croffle','food','Croffle','🧇','#f0ddd0',120,false,'Rich chocolate croissant-waffle'),
+  F(68,'Cookies & Cream Croffle','food','Croffle','🧇','#f5f0e8',120,false,'Oreo cookies and cream croffle'),
+  F(69,'Nachos','food','Nachos','🌮','#fef3e0',150,false,'Crispy tortilla chips with assorted dips'),
+];
+
+const CATS=[
+  {key:'all',label:'🔥 All'},
+  {key:'frappe',label:'☕ Frappes'},
+  {key:'noncoffee',label:'🍵 Non-Coffee'},
+  {key:'milktea',label:'🧋 Milk Tea'},
+  {key:'fruittea',label:'🍓 Fruit Tea'},
+  {key:'yakult',label:'🫐 Yakult'},
+  {key:'slushy',label:'🧊 Slushy'},
+  {key:'food',label:'🍕 Food'},
+];
+const CAT_LABELS={
+  frappe:'Frappes',noncoffee:'Special Non-Coffee',
+  milktea:'Milk Tea',fruittea:'Fruit Tea',
+  yakult:'Yakult Series',slushy:'Slushy',food:'Food & Snacks',
+};
+
+/*════════════════════════════════
+  STATE
+════════════════════════════════*/
+let activeCat='all', searchQ='';
+const cart={};
+const orders=[];
+let posOpen=false;
+
+// Sheet state
+let shItem=null, shSize='M', shQty=1;
+
+/*════════════════════════════════
+  MESSAGING (same-tab CustomEvent + cross-tab BC)
+════════════════════════════════*/
+const BC=(()=>{try{return new BroadcastChannel('taraki_pos');}catch(e){return null;}})();
+function msgSend(msg){
+  if(BC) try{BC.postMessage(msg);}catch(e){}
+  window.dispatchEvent(new CustomEvent('taraki:msg',{detail:msg}));
+}
+if(BC) BC.onmessage=e=>onMsg(e.data);
+window.addEventListener('taraki:msg',e=>onMsg(e.detail));
+function onMsg(msg){
+  if(!msg) return;
+  if(msg.type==='NEW_ORDER'&&posOpen){renderPOSQueue();updatePOSStats();}
+  if(msg.type==='CHARGE'){
+    const o=orders.find(x=>x.id===msg.orderId);
+    if(o){o.charged=true;if(document.getElementById('view-orders').classList.contains('active'))renderOrders();}
+  }
+}
+
+/*════════════════════════════════
+  BUILD MENU
+════════════════════════════════*/
+function buildCats(){
+  document.getElementById('cat-row').innerHTML=CATS.map(c=>
+    `<button class="cat-pill${c.key==='all'?' active':''}" data-cat="${c.key}"
+      onclick="setCategory('${c.key}')">${c.label}</button>`
+  ).join('');
+}
+
+function renderMenuList(){
+  const list=document.getElementById('menu-list');
+  const q=searchQ.trim().toLowerCase();
+  let items=q
+    ? MENU.filter(m=>m.name.toLowerCase().includes(q)||m.sub.toLowerCase().includes(q)||m.desc.toLowerCase().includes(q))
+    : (activeCat==='all' ? MENU : MENU.filter(m=>m.cat===activeCat));
+
+  if(!items.length){
+    list.innerHTML=`<div class="center-empty" style="padding-top:50px">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No items found</div>
+      <div class="empty-sub">Try a different search term</div>
+    </div>`;
+    return;
+  }
+
+  let html='';
+  if(!q && activeCat==='all'){
+    const order=['frappe','noncoffee','milktea','fruittea','yakult','slushy','food'];
+    order.forEach(cat=>{
+      const catItems=items.filter(m=>m.cat===cat);
+      if(!catItems.length) return;
+      html+=`<div class="section-label">
+        <div class="section-label-line"></div>
+        <div class="section-label-text">${CAT_LABELS[cat]}</div>
+        <div class="section-label-line"></div>
+      </div>`;
+      catItems.forEach(item=>{html+=itemRowHTML(item);});
+    });
+  } else if(!q && activeCat!=='all'){
+    const subs=[...new Set(items.map(m=>m.sub))];
+    subs.forEach(sub=>{
+      if(subs.length>1) html+=`<div class="subsection-label">${sub}</div>`;
+      items.filter(m=>m.sub===sub).forEach(item=>{html+=itemRowHTML(item);});
+    });
+  } else {
+    items.forEach(item=>{html+=itemRowHTML(item);});
+  }
+  list.innerHTML=html;
+}
+
+function itemRowHTML(item){
+  const price=item.type==='sized'?item.M:item.price;
+  const inCart=Object.keys(cart).some(k=>k.startsWith(item.id+'_')||k===String(item.id));
+  return `<div class="menu-item" onclick="openSheet(${item.id})">
+    <div class="item-info">
+      <div class="item-name">
+        ${item.name}
+        ${item.star?'<span class="item-best">★ BEST</span>':''}
+      </div>
+      <div class="item-desc">${item.desc}</div>
+      <div class="item-price">₱${price}${item.type==='sized'?' +':''}
+        ${item.type==='sized'?`<span style="font-size:11px;font-weight:400;color:var(--mu);font-family:var(--fn)"> M / ₱${item.L} L</span>`:''}
+      </div>
+    </div>
+    <div class="item-img-wrap">
+      <div class="item-img" style="background:${item.bg}">${item.em}</div>
+      <button class="item-add${inCart?' in-cart':''}" id="addbtn-${item.id}"
+        onclick="event.stopPropagation();openSheet(${item.id})">+</button>
+    </div>
+  </div>`;
+}
+
+function setCategory(cat){
+  activeCat=cat;
+  searchQ='';
+  document.getElementById('search-input').value='';
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===cat));
+  renderMenuList();
+  document.getElementById('scroll-area').scrollTop=0;
+}
+
+function doSearch(){
+  searchQ=document.getElementById('search-input').value;
+  renderMenuList();
+}
+
+/*════════════════════════════════
+  BOTTOM SHEET
+════════════════════════════════*/
+function openSheet(id){
+  shItem=MENU.find(m=>m.id===id);
+  shQty=1;
+  shSize=shItem.type==='sized'?'M':null;
+
+  document.getElementById('sh-img').style.background=shItem.bg;
+  document.getElementById('sh-img').textContent=shItem.em;
+  document.getElementById('sh-name').textContent=shItem.name;
+  document.getElementById('sh-desc').textContent=shItem.desc;
+  document.getElementById('sh-qty').textContent=1;
+
+  const sizesWrap=document.getElementById('sh-sizes-wrap');
+  if(shItem.type==='sized'){
+    sizesWrap.style.display='block';
+    document.getElementById('sh-sizes').innerHTML=
+      ['M','L'].map(sz=>`
+        <div class="sheet-size${sz==='M'?' active':''}" onclick="setSheetSize('${sz}')">
+          <div class="sheet-size-lbl">${sz==='M'?'Medium':'Large'}</div>
+          <div class="sheet-size-price">₱${sz==='M'?shItem.M:shItem.L}</div>
+        </div>`).join('');
+  } else {
+    sizesWrap.style.display='none';
+  }
+
+  updateSheetTotal();
+  document.getElementById('sheet-overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+
+function closeSheet(){
+  document.getElementById('sheet-overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+  shItem=null;
+}
+
+function setSheetSize(sz){
+  shSize=sz;
+  document.querySelectorAll('.sheet-size').forEach((el,i)=>
+    el.classList.toggle('active',(i===0&&sz==='M')||(i===1&&sz==='L')));
+  updateSheetTotal();
+}
+
+function sheetQty(delta){
+  shQty=Math.max(1,shQty+delta);
+  document.getElementById('sh-qty').textContent=shQty;
+  updateSheetTotal();
+}
+
+function updateSheetTotal(){
+  if(!shItem) return;
+  const p=shItem.type==='sized'?(shSize==='M'?shItem.M:shItem.L):shItem.price;
+  document.getElementById('sh-add-txt').textContent=`Add to Cart · ₱${p*shQty}`;
+}
+
+function sheetAddToCart(){
+  if(!shItem) return;
+  let key,price,sizeLbl;
+  if(shItem.type==='sized'){
+    key=shItem.id+'_'+shSize;
+    price=shSize==='M'?shItem.M:shItem.L;
+    sizeLbl=shSize==='M'?'Medium':'Large';
+  } else {
+    key=String(shItem.id);
+    price=shItem.price;
+    sizeLbl=null;
+  }
+  if(cart[key]){
+    cart[key].qty+=shQty;
+  } else {
+    cart[key]={itemId:shItem.id,name:shItem.name,em:shItem.em,bg:shItem.bg,qty:shQty,price,sizeLbl};
+  }
+  updateCounter();
+  showToast(shItem.name+(sizeLbl?' ('+sizeLbl+')':'')+' added ✓');
+  closeSheet();
+  // Refresh add button visual
+  const btn=document.getElementById('addbtn-'+shItem.id);
+  if(btn) btn.classList.add('in-cart');
+}
+
+/*════════════════════════════════
+  CART COUNTER
+════════════════════════════════*/
+function cartTotal(){return Object.values(cart).reduce((s,e)=>s+e.price*e.qty,0);}
+function cartItems(){return Object.values(cart).reduce((s,e)=>s+e.qty,0);}
+function updateCounter(){
+  const n=cartItems();
+  document.getElementById('cart-count').textContent=n;
+  const b=document.getElementById('cart-badge');
+  b.textContent=n;b.classList.toggle('show',n>0);
+}
+
+/*════════════════════════════════
+  RENDER CART
+════════════════════════════════*/
+function renderCart(){
+  const entries=Object.entries(cart);
+  const n=cartItems(), total=cartTotal();
+  document.getElementById('cart-sub').textContent=
+    n===0?'0 items':n+' item'+(n!==1?'s':'')+' · ₱'+total;
+  if(!entries.length){
+    document.getElementById('cart-content').innerHTML=
+      `<div class="center-empty">
+        <div class="empty-icon">🛒</div>
+        <div class="empty-title">Your cart is empty</div>
+        <div class="empty-sub">Tap any item on the menu to add it</div>
+      </div>`;
+    return;
+  }
+  document.getElementById('cart-content').innerHTML=
+    `<div class="cart-list">
+      ${entries.map(([key,e])=>
+        `<div class="cart-item">
+          <div class="ci-thumb" style="background:${e.bg}">${e.em}</div>
+          <div class="ci-info">
+            <div class="ci-name">${e.name}</div>
+            <div class="ci-sub">₱${e.price}${e.sizeLbl?' · '+e.sizeLbl:''} × ${e.qty}</div>
+          </div>
+          <span class="ci-price">₱${e.price*e.qty}</span>
+          <button class="ci-remove" onclick="removeFromCart('${key}')">✕</button>
+        </div>`
+      ).join('')}
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-card">
+        <div class="total-row">
+          <span class="total-lbl">Total Amount</span>
+          <span class="total-val">₱${total}</span>
+        </div>
+      </div>
+    </div>
+    <div class="order-wrap">
+      <button class="place-btn" id="place-btn" onclick="placeOrder()">
+        <span class="spin" id="spin"></span>
+        <span id="place-txt">Place Order · ₱${total}</span>
+      </button>
+    </div>`;
+}
+
+function removeFromCart(key){
+  const id=parseInt(key.split('_')[0]);
+  delete cart[key];
+  updateCounter();
+  renderCart();
+  // Remove in-cart class if no keys for this item remain
+  const still=Object.keys(cart).some(k=>k.startsWith(id+'_')||k===String(id));
+  if(!still){const b=document.getElementById('addbtn-'+id);if(b)b.classList.remove('in-cart');}
+}
+
+/*════════════════════════════════
+  PLACE ORDER
+════════════════════════════════*/
+function placeOrder(){
+  if(!Object.keys(cart).length) return;
+  const btn=document.getElementById('place-btn');
+  const txt=document.getElementById('place-txt');
+  btn.disabled=true;btn.classList.add('loading');txt.textContent='Sending to cashier…';
+  const entries=Object.values(cart).map(e=>({...e}));
+  const total=cartTotal();
+  const oid='#TK-'+Math.floor(1000+Math.random()*9000);
+  const time=new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+  const order={id:oid,entries,total,time,charged:false};
+  setTimeout(()=>{
+    orders.unshift(order);
+    msgSend({type:'NEW_ORDER',order});
+    Object.keys(cart).forEach(k=>{
+      const id=parseInt(k.split('_')[0]);
+      delete cart[k];
+      const b=document.getElementById('addbtn-'+id);if(b)b.classList.remove('in-cart');
+    });
+    updateCounter();
+    switchView('orders');
+    showPosNotify('Order '+oid+' sent to cashier!');
+    setTimeout(()=>animateTracker(oid),300);
+  },1200);
+}
+
+/*════════════════════════════════
+  RENDER ORDERS
+════════════════════════════════*/
+function renderOrders(){
+  const el=document.getElementById('orders-content');
+  if(!orders.length){
+    el.innerHTML=`<div class="center-empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">No active orders yet</div>
+      <div class="empty-sub">Place an order and track it here</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML=orders.map(o=>{
+    const k=o.id.replace(/\W/g,'');
+    const ch=o.charged;
+    return `
+    <div class="order-card" id="oc-${k}">
+      <div class="oc-top">
+        <span class="oc-id">${o.id}</span>
+        <span class="oc-badge">${ch?'Paid ✓':'Active'}</span>
+      </div>
+      <div class="pay-banner ${ch?'paid':'pending'}">
+        <span class="pay-dot"></span>
+        <span>${ch?'✅ Payment received by cashier':'⏳ Waiting for cashier to charge…'}</span>
+      </div>
+      <div class="oc-receipt">
+        <div class="rcpt-lbl">Order Summary</div>
+        ${o.entries.map(e=>`
+          <div class="r-row">
+            <div class="r-left">
+              <span class="r-emoji">${e.em}</span>
+              <span class="r-name">${e.name}${e.sizeLbl?' <span class="r-sz">('+e.sizeLbl[0]+')</span>':''}</span>
+              <span class="r-qty">×${e.qty}</span>
+            </div>
+            <span class="r-price">₱${e.price*e.qty}</span>
+          </div>`).join('')}
+        <div class="r-total">
+          <span class="r-total-lbl">Total</span>
+          <span class="r-total-val">₱${o.total}</span>
+        </div>
+      </div>
+      <div class="prog-section">
+        <div class="prog-lbl">Order Status</div>
+        <div class="prog-steps">
+          <div class="prog-line">
+            <div class="prog-fill" id="pf-${k}" style="width:${ch?'100%':'0%'}"></div>
+          </div>
+          ${[
+            {label:'Order\nSent',icon:'📤',eta:o.time},
+            {label:'At\nCashier',icon:'🖥️',eta:'Counter'},
+            {label:'Payment\nDone',icon:'✓',eta:'Ready'},
+          ].map((s,i)=>`
+            <div class="step${ch?' done':''}" id="step-${k}-${i}">
+              <div class="step-dot">${s.icon}</div>
+              <div class="step-lbl">${s.label.replace('\n','<br>')}</div>
+              <div class="step-eta">${s.eta}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="oc-footer">
+        <div>
+          <div class="oc-time-lbl">Ordered at</div>
+          <div class="oc-time-val">${o.time}</div>
+        </div>
+        <button class="new-order-btn" onclick="switchView('menu')">+ New Order</button>
+      </div>
+    </div>`;
+  }).join('');
+  orders.forEach(o=>{if(!o.charged)animateTracker(o.id);});
+}
+
+function animateTracker(oid){
+  const k=oid.replace(/\W/g,'');
+  const order=orders.find(o=>o.id===oid);
+  if(!order||order.charged) return;
+  [0,900,2200].forEach((delay,i)=>{
+    setTimeout(()=>{
+      if(order.charged) return;
+      const stepEl=document.getElementById('step-'+k+'-'+i);
+      const lineEl=document.getElementById('pf-'+k);
+      if(!stepEl) return;
+      for(let j=0;j<i;j++){const p=document.getElementById('step-'+k+'-'+j);if(p){p.classList.remove('active');p.classList.add('done');}}
+      stepEl.classList.add('active');
+      if(lineEl) lineEl.style.width=['0%','50%','100%'][i];
+    },delay);
+  });
+}
+
+/*════════════════════════════════
+  POS TERMINAL
+════════════════════════════════*/
+function openPOS(){
+  posOpen=true;
+  document.getElementById('pos-overlay').classList.add('open');
+  renderPOSQueue();updatePOSStats();
+}
+function closePOS(){
+  posOpen=false;
+  document.getElementById('pos-overlay').classList.remove('open');
+}
+
+function renderPOSQueue(){
+  const el=document.getElementById('pos-queue');
+  if(!orders.length){
+    el.innerHTML=`<div class="pos-empty-wrap">
+      <div class="pos-empty-ico">🖥️</div>
+      <div class="pos-empty-txt">Waiting for orders…</div>
+      <div class="pos-empty-sub">Customer orders will appear here automatically</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML=orders.map(o=>{
+    const k='pt'+o.id.replace(/\W/g,'');
+    const ch=o.charged;
+    return `
+    <div class="pos-ticket${ch?' charged':''}" id="${k}">
+      <div class="pt-top">
+        <div>
+          <div class="pt-id">${o.id}</div>
+          <div class="pt-time">⏱ ${o.time}</div>
+        </div>
+        <span class="pt-badge ${ch?'charged':'pending'}">${ch?'CHARGED':'PENDING'}</span>
+      </div>
+      <div class="pt-items">
+        ${o.entries.map(e=>`
+          <div class="pt-item">
+            <div class="pt-item-l">
+              <span class="pt-em">${e.em}</span>
+              <span class="pt-nm">${e.name}</span>
+              ${e.sizeLbl?'<span class="pt-sz">('+e.sizeLbl+')</span>':''}
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="pt-iq">×${e.qty}</span>
+              <span class="pt-ip">₱${e.price*e.qty}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="pt-total">
+        <span class="pt-total-lbl">TOTAL TO CHARGE</span>
+        <span class="pt-total-val">₱${o.total}</span>
+      </div>
+      <div class="pt-actions" id="act-${k}">
+        ${ch
+          ?`<span class="done-lbl">✅ Payment Received</span>
+            <button class="print-btn" onclick="printReceipt('${o.id}')" title="Print">🖨️</button>`
+          :`<button class="charge-btn" onclick="chargeOrder('${o.id}')">
+              💳 Charge ₱${o.total}
+            </button>
+            <button class="print-btn" onclick="printReceipt('${o.id}')" title="Print">🖨️</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function chargeOrder(orderId){
+  const order=orders.find(x=>x.id===orderId);
+  if(!order||order.charged) return;
+  order.charged=true;
+  msgSend({type:'CHARGE',orderId});
+  const k='pt'+orderId.replace(/\W/g,'');
+  const ticket=document.getElementById(k);
+  if(ticket){
+    ticket.classList.add('charged');
+    const badge=ticket.querySelector('.pt-badge');
+    if(badge){badge.className='pt-badge charged';badge.textContent='CHARGED';}
+    const act=document.getElementById('act-'+k);
+    if(act) act.innerHTML=`<span class="done-lbl">✅ Payment Received</span>
+      <button class="print-btn" onclick="printReceipt('${orderId}')" title="Print">🖨️</button>`;
+  }
+  updatePOSStats();
+  if(document.getElementById('view-orders').classList.contains('active')) renderOrders();
+  showToast(orderId+' charged ✓');
+}
+
+function updatePOSStats(){
+  const pending=orders.filter(o=>!o.charged).length;
+  const charged=orders.filter(o=>o.charged).length;
+  const revenue=orders.filter(o=>o.charged).reduce((s,o)=>s+o.total,0);
+  document.getElementById('pos-pending').textContent=pending;
+  document.getElementById('pos-charged').textContent=charged;
+  document.getElementById('pos-revenue').textContent='₱'+revenue;
+}
+
+function printReceipt(orderId){
+  const o=orders.find(x=>x.id===orderId);
+  if(!o){showToast('Receipt not found');return;}
+  const win=window.open('','_blank','width=360,height=540,menubar=no,toolbar=no');
+  if(!win){showToast('Allow pop-ups to print');return;}
+  const rows=o.entries.map(e=>
+    '<tr><td>'+e.em+' '+e.name+(e.sizeLbl?' ('+e.sizeLbl+')':'')+' ×'+e.qty+'</td>'
+    +'<td style="text-align:right;font-weight:700">&#8369;'+(e.price*e.qty)+'</td></tr>'
+  ).join('');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt</title>'
+    +'<style>body{font-family:monospace;padding:20px;font-size:12px}'
+    +'h2{text-align:center;margin-bottom:4px}p{text-align:center;color:#777;font-size:10px;margin:0 0 14px}'
+    +'table{width:100%}td{padding:4px 2px;border-bottom:1px dotted #eee}'
+    +'.tot{font-size:14px;font-weight:700;border-top:2px solid #333}'
+    +'.footer{margin-top:16px;text-align:center;font-size:10px;color:#999}</style></head><body>'
+    +'<h2>&#9749; Taraki Coffee</h2>'
+    +'<p>Mangatarem, Pangasinan · Est. 2022<br>Coffee makes life better</p>'
+    +'<table><tr><td><b>Order</b></td><td style="text-align:right"><b>'+o.id+'</b></td></tr>'
+    +'<tr><td>Time</td><td style="text-align:right">'+o.time+'</td></tr>'
+    +'<tr><td>Status</td><td style="text-align:right">'+(o.charged?'PAID':'PENDING')+'</td></tr></table>'
+    +'<br><table>'+rows
+    +'<tr class="tot"><td>TOTAL</td><td style="text-align:right">&#8369;'+o.total+'</td></tr></table>'
+    +'<div class="footer">Thank you! Please come again &#9749;</div>'
+    +'<script>setTimeout(function(){window.print();},300);<\/script>'
+    +'</body></html>');
+  win.document.close();
+}
+
+/*════════════════════════════════
+  POS OPEN  (long-press / triple-click)
+════════════════════════════════*/
+const trigger=document.getElementById('pos-trigger');
+const hintEl=document.getElementById('pos-hint');
+let pressTimer=null,clickCount=0,clickTimer=null;
+trigger.addEventListener('touchstart',()=>{pressTimer=setTimeout(()=>{hintEl.classList.remove('show');openPOS();},800);},{passive:true});
+trigger.addEventListener('touchend',()=>clearTimeout(pressTimer),{passive:true});
+trigger.addEventListener('touchmove',()=>clearTimeout(pressTimer),{passive:true});
+trigger.addEventListener('click',()=>{
+  clickCount++;clearTimeout(clickTimer);
+  if(clickCount===1){hintEl.classList.add('show');setTimeout(()=>hintEl.classList.remove('show'),2500);}
+  if(clickCount>=3){clickCount=0;hintEl.classList.remove('show');openPOS();return;}
+  clickTimer=setTimeout(()=>{clickCount=0;},1400);
+});
+
+/*════════════════════════════════
+  VIEW SWITCHING
+════════════════════════════════*/
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelector('[data-view="'+name+'"]').classList.add('active');
+  document.getElementById('scroll-area').scrollTop=0;
+  if(name==='cart') renderCart();
+  if(name==='orders') renderOrders();
+}
+document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>switchView(t.dataset.view)));
+
+/*════════════════════════════════
+  TOAST & NOTIFY
+════════════════════════════════*/
+let toastT,notifyT;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function showPosNotify(msg){
+  const el=document.getElementById('pos-notify');
+  document.getElementById('pos-notify-txt').textContent=msg;
+  el.classList.add('show');
+  clearTimeout(notifyT);notifyT=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+/*════════════════════════════════
+  BOOT
+════════════════════════════════*/
+buildCats();
+renderMenuList();
+</script>
+</body>
+</html>
